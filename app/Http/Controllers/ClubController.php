@@ -105,28 +105,37 @@ class ClubController extends Controller
     public function updateMyClub(Request $request)
     {
         $user = auth()->user();
-
-        if ($user->role !== 'club_admin') {
-            abort(403, 'Yetkisiz işlem.');
-        }
+        if ($user->role !== 'club_admin') { abort(403, 'Yetkisiz işlem.'); }
 
         $club = $user->club;
 
         $request->validate([
             'name'  => 'required|string|max:255',
             'about' => 'nullable|string',
-            'logo'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'logo'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            // Sosyal medya linkleri opsiyonel
+            'instagram' => 'nullable|url',
+            'linkedin'  => 'nullable|url',
+            'twitter'   => 'nullable|url',
+            'youtube'   => 'nullable|url',
+            'nsosyal'   => 'nullable|url',
         ]);
 
         $club->name = $request->name;
         $club->about = $request->about;
+
+        // Yeni eklenen alanlar
+        $club->instagram = $request->instagram;
+        $club->linkedin = $request->linkedin;
+        $club->twitter = $request->twitter;
+        $club->youtube = $request->youtube;
+        $club->nsosyal = $request->nsosyal;
 
         if ($request->hasFile('logo')) {
             $file = $request->file('logo');
             $filename = time() . '.' . $file->getClientOriginalExtension();
             $path = 'uploads/clubs/';
             $file->move(public_path($path), $filename);
-
             $club->logo = $path . $filename;
         }
 
@@ -167,4 +176,46 @@ class ClubController extends Controller
         // front/kulup_detay.blade.php sayfasını aç ve kulüp verisini yolla
         return view('clubs.kulup_detay', compact('club'));
     }
+
+    public function iletisim($slug)
+    {
+        $club = \App\Models\Club::where('slug', $slug)->firstOrFail();
+        return view('clubs.iletisim', compact('club'));
+    }
+
+    public function yonetimKurulu($slug)
+    {
+        // Kulübü bulurken, o kulübe ait yönetim kurulu üyelerini de (members) beraberinde getiriyoruz
+        $club = \App\Models\Club::with('members')->where('slug', $slug)->firstOrFail();
+
+        return view('clubs.yonetim_kurulu', compact('club'));
+    }
+
+    // Ziyaretçi Etkinlikler Listesi Sayfası
+    public function etkinlikler($slug)
+    {
+        // Kulübü ve ona ait etkinlikleri getir
+        $club = \App\Models\Club::with('events')->where('slug', $slug)->firstOrFail();
+
+        return view('clubs.etkinlikler', compact('club'));
+    }
+
+    // Ziyaretçi Tekil Etkinlik Detay Sayfası
+    public function etkinlikDetay($slug, $event_slug)
+    {
+        $club = \App\Models\Club::where('slug', $slug)->firstOrFail();
+
+        // Sadece bu kulübe ait olan ve slug'ı eşleşen etkinliği bul
+        $event = \App\Models\ClubEvent::where('club_id', $club->id)->where('slug', $event_slug)->firstOrFail();
+
+        return view('clubs.etkinlik_detay', compact('club', 'event'));
+    }
+
+    public function galeri($slug)
+    {
+        $club = \App\Models\Club::with('galleries')->where('slug', $slug)->firstOrFail();
+        return view('clubs.galeri', compact('club'));
+    }
+
+
 }

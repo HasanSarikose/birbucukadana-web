@@ -311,6 +311,13 @@
                             <p>Kulüp Bilgilerim</p>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('admin.club_members.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Yönetim Kurulu</p>
+                        </a>
+                    </li>
                 @endif
                 <li class="nav-header">Sabit Linkler</li>
                 <li class="nav-item">

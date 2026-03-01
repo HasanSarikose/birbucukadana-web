@@ -193,5 +193,43 @@ Route::controller(\App\Http\Controllers\ClubController::class)->middleware(['aut
     Route::post('admin/kulup/bilgilerim/guncelle', 'updateMyClub')->name('admin.clubs.update_my_club');
     Route::post('admin/kulup/resim-yukle', 'uploadImage')->name('admin.clubs.upload_image');
 
-    Route::get('kulupler/{slug}', [\App\Http\Controllers\ClubController::class, 'detay'])->name('kulup.detay');
+    Route::get('kulupler/{slug}', 'detay')->name('kulup.detay');
+    Route::get('kulupler/{slug}/iletisim',  'iletisim')->name('kulup.iletisim');
+    Route::get('kulupler/{slug}/yonetim-kurulu', 'yonetimKurulu')->name('kulup.yonetim_kurulu');
+
+    // Ziyaretçi Kulüp Etkinlikleri Listesi
+    Route::get('kulupler/{slug}/etkinlikler', 'etkinlikler')->name('kulup.etkinlikler');
+
+// Ziyaretçi Kulüp Etkinlik Detayı (Uzun yazıyı okumak için)
+    Route::get('kulupler/{slug}/etkinlik/{event_slug}', 'etkinlikDetay')->name('kulup.etkinlik_detay');
+
+    Route::get('kulupler/{slug}/galeri', 'galeri')->name('kulup.galeri');
+
+});
+
+// --- Kulüp Yönetim Kurulu İşlemleri (Sadece club_admin) ---
+Route::controller(\App\Http\Controllers\ClubMemberController::class)->middleware(['auth'])->group(function () {
+    Route::get('admin/kulup/uyeler', 'index')->name('admin.club_members.index');
+    Route::get('admin/kulup/uyeler/ekle', 'create')->name('admin.club_members.create');
+    Route::post('admin/kulup/uyeler/kaydet', 'store')->name('admin.club_members.store');
+    Route::get('admin/kulup/uyeler/duzenle/{id}', 'edit')->name('admin.club_members.edit');
+    Route::post('admin/kulup/uyeler/guncelle/{id}', 'update')->name('admin.club_members.update');
+    Route::delete('admin/kulup/uyeler/sil/{id}', 'destroy')->name('admin.club_members.destroy');
+});
+
+Route::controller(\App\Http\Controllers\ClubEventController::class)->middleware(['auth'])->group(function () {
+    Route::get('admin/kulup/etkinlikler', 'index')->name('admin.club_events.index');
+    Route::get('admin/kulup/etkinlikler/ekle', 'create')->name('admin.club_events.create');
+    Route::post('admin/kulup/etkinlikler/kaydet', 'store')->name('admin.club_events.store');
+    Route::get('admin/kulup/etkinlikler/duzenle/{id}', 'edit')->name('admin.club_events.edit');
+    Route::post('admin/kulup/etkinlikler/guncelle/{id}', 'update')->name('admin.club_events.update');
+    Route::delete('admin/kulup/etkinlikler/sil/{id}', 'destroy')->name('admin.club_events.destroy');
+});
+
+Route::controller(\App\Http\Controllers\ClubGalleryController::class)->middleware(['auth'])->group(function () {
+    Route::get('admin/kulup/galeri', 'index')->name('admin.club_gallery.index');
+    Route::post('admin/kulup/galeri/kaydet', 'store')->name('admin.club_gallery.store');
+    Route::delete('admin/kulup/galeri/sil/{id}', 'destroy')->name('admin.club_gallery.destroy');
+    Route::get('admin/kulup/galeri/duzenle/{id}', 'edit')->name('admin.club_gallery.edit');
+    Route::post('admin/kulup/galeri/guncelle/{id}', 'update')->name('admin.club_gallery.update');
 });

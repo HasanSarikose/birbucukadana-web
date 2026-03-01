@@ -13,4 +13,20 @@ class Club extends Model
     {
         return $this->hasMany(User::class, 'club_id', 'id');
     }
+
+    public function members()
+    {
+        return $this->hasMany(ClubMember::class, 'club_id', 'id');
+    }
+
+    public function events()
+    {
+        return $this->hasMany(ClubEvent::class, 'club_id', 'id')->orderBy('event_date', 'desc');
+    }
+
+    public function galleries()
+    {
+        // En son eklenen fotoğraf en üstte çıksın diye orderBy ekledik
+        return $this->hasMany(ClubGallery::class, 'club_id', 'id')->orderBy('created_at', 'desc');
+    }
 }

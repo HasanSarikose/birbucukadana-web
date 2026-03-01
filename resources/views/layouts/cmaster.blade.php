@@ -46,6 +46,19 @@
             width: 100%;
             margin-top: auto;
         }
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1; /* İçerik alanı, boş alanı doldurarak footer'ı en alta iter */
+        }
     </style>
 
     @yield('customCSS')
@@ -54,7 +67,9 @@
 
 @include('layouts.cnavbar')
 
-@yield('content')
+<div class="main-content">
+    @yield('content')
+</div>
 
 @include('layouts.footer')
 
